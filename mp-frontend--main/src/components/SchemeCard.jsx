@@ -1,10 +1,10 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { CheckCircle2, ArrowRight, Star, FileEdit } from 'lucide-react'
+import { CheckCircle2, ArrowRight, Star, FileEdit, Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-const SchemeCard = ({ scheme, index, onApplyDirectly }) => {
+const SchemeCard = ({ scheme, index, onApplyDirectly, isSelected = false, onToggleSelect = null }) => {
   const { t } = useTranslation()
 
   const getLabel = (key, fallback) => {
@@ -20,7 +20,11 @@ const SchemeCard = ({ scheme, index, onApplyDirectly }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="glass p-6 rounded-3xl flex flex-col h-full bg-white/95 border border-gray-100 shadow-sm transition-all hover:shadow-lg"
+      className={`glass p-6 rounded-3xl flex flex-col h-full border shadow-sm transition-all hover:shadow-lg ${
+        isSelected
+          ? 'bg-blue-50/95 border-gov-blue/40 ring-2 ring-gov-blue/30'
+          : 'bg-white/95 border-gray-100'
+      }`}
     >
       <div className="flex justify-between items-start mb-4">
         <span className={`text-[10px] font-bold px-2 py-1 rounded border uppercase tracking-widest ${
@@ -28,11 +32,25 @@ const SchemeCard = ({ scheme, index, onApplyDirectly }) => {
         }`}>
           {scheme.category || 'General'}
         </span>
-        <div className={`flex items-center gap-1 font-bold text-sm ${
-          scheme.score > 90 ? 'text-india-green' : 'text-gov-accent'
-        }`}>
-          <Star className={`w-4 h-4 ${scheme.score > 90 ? 'fill-india-green' : 'fill-gov-accent'}`} />
-          <span>{scheme.score}% Match</span>
+        <div className="flex items-center gap-2">
+          <div className={`flex items-center gap-1 font-bold text-sm ${
+            scheme.score > 90 ? 'text-india-green' : 'text-gov-accent'
+          }`}>
+            <Star className={`w-4 h-4 ${scheme.score > 90 ? 'fill-india-green' : 'fill-gov-accent'}`} />
+            <span>{scheme.score}% Match</span>
+          </div>
+          {onToggleSelect && (
+            <button
+              onClick={() => onToggleSelect(scheme)}
+              className={`ml-2 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                isSelected
+                  ? 'bg-gov-blue text-white'
+                  : 'border-2 border-gray-300 hover:border-gov-blue'
+              }`}
+            >
+              {isSelected && <Check className="w-4 h-4" />}
+            </button>
+          )}
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Bot, Search, ShieldCheck, Zap } from 'lucide-react'
+import { ArrowRight, Bot, Search, ShieldCheck, Zap, Lightbulb } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 const Home = () => {
@@ -50,9 +50,9 @@ const Home = () => {
             <Link to="/form" className="btn-primary flex items-center gap-2 text-sm shadow-xl shadow-blue-900/10">
               {t('home.cta')} <ArrowRight className="w-4 h-4" />
             </Link>
-            <button className="px-6 py-2.5 rounded-lg border border-gray-200 bg-white text-gray-600 font-bold text-sm hover:border-gov-blue hover:text-gov-blue transition-all">
-              {t('home.how_it_works')}
-            </button>
+            <Link to="/questionnaire" className="px-6 py-2.5 rounded-lg border-2 border-gov-blue bg-blue-50 text-gov-blue font-bold text-sm hover:bg-gov-blue hover:text-white transition-all flex items-center gap-2">
+              <Lightbulb className="w-4 h-4" /> Guided Assistant
+            </Link>
           </motion.div>
         </div>
       </section>
@@ -73,8 +73,8 @@ const Home = () => {
             },
             { 
               icon: <Bot className="w-6 h-6 text-gov-blue" />, 
-              title: "AI Analysis Engine", 
-              desc: "Advanced logic models that understand complex criteria rules for precise matching scores." 
+              title: "Guided Questionnaire", 
+              desc: "Step-by-step interactive form that filters matching schemes in real-time as you answer." 
             },
             { 
               icon: <ShieldCheck className="w-6 h-6 text-gov-blue" />, 

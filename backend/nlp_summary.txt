@@ -57,3 +57,32 @@ I made it much easier for you to run the project:
 Root package.json: You can now run npm run dev from the main folder to start both the Frontend and Backend together.
 run_app.ps1: A PowerShell script that opens the servers in separate windows automatically.
 NLP Summary: I created a file called nlp_summary.txt in your backend folder that explains these technical changes.
+
+6. Scheme Comparison Tool
+Users can now compare multiple schemes side-by-side to make informed decisions:
+
+Multi-Scheme Selection: Users can select 2-3 schemes from search results to compare directly.
+Detailed Comparison View: A dedicated comparison page displays key attributes (eligibility, benefits, age limits, income thresholds) in a structured table format.
+Feature Highlighting: Automatically highlights matching and differing criteria to help users identify the best scheme for their needs.
+Quick Decision Making: Reduces decision fatigue by presenting all critical information in one place.
+
+7. AI-Powered Chatbot
+An intelligent conversational interface that answers user questions about schemes in natural language:
+
+Natural Language Understanding: Users can ask questions like "Which schemes am I eligible for?" or "What's the application process?" and receive intelligent responses.
+Multi-Language Support: The chatbot understands and responds in Kannada, Hindi, and English, making it accessible to non-English speakers.
+Eligibility Clarification: Users can have a conversation to determine eligibility before applying, with the chatbot asking clarifying questions about age, income, state, and category.
+Scheme Recommendations: Based on the conversation, the chatbot proactively recommends the most suitable schemes.
+Document References: The chatbot provides direct links and references to official scheme documents and application portals.
+24/7 Availability: Users get instant assistance without waiting for human support.
+
+8. Advanced Eligibility Questionnaire
+An interactive, guided form that walks users through eligibility criteria step-by-step with real-time scheme filtering:
+
+Step-by-Step Questions: Users answer 8 guided questions covering name, age, gender, state, income, occupation, category, and specific needs.
+Real-Time Scheme Filtering: As users answer each question, matching schemes are displayed live on the right panel.
+Live Matching Dashboard: Shows the current number of matching schemes based on answers provided so far.
+Visual Answer Summary: Quick reference sidebar displays all previous answers for easy review and modification.
+Filtered Results: Only schemes matching the user's specific profile are shown, dramatically reducing decision overload.
+Mobile-Friendly: Fully responsive design optimized for phones, tablets, and desktops.
+Seamless Transition: Users can review matching schemes and proceed directly to detailed results or comparisons.

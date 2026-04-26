@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { CheckCircle2, Info, TrendingUp, Download, X, HelpCircle, ArrowLeft, Loader2 } from 'lucide-react'
+import { CheckCircle2, Info, TrendingUp, Download, X, HelpCircle, ArrowLeft, Loader2, ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import SchemeCard from '../components/SchemeCard'
@@ -21,6 +21,7 @@ const Results = () => {
   const [showAppModal, setShowAppModal] = useState(false)
   const [activeScheme, setActiveScheme] = useState(null)
   const [translating, setTranslating] = useState(false)
+  const [selectedSchemes, setSelectedSchemes] = useState([])
 
   const translateResults = async (data, lang) => {
     if (lang === 'en' || !Array.isArray(data)) return data || [];
@@ -65,8 +66,9 @@ const Results = () => {
         
         if (!response.ok) throw new Error("Network response was not ok");
         
+        const currentLang = i18n.language.split('-')[0]; // Normalize 'en-IN' to 'en'
         const results = await response.json();
-        const translatedResults = await translateResults(results, i18n.language);
+        const translatedResults = await translateResults(results, currentLang);
         setMatchedSchemes(translatedResults);
       } catch (err) {
         console.error("Filtering error:", err);
@@ -82,6 +84,25 @@ const Results = () => {
   const handleApplyDirectly = (scheme) => {
     setActiveScheme(scheme)
     setShowAppModal(true)
+  }
+
+  const handleToggleSelect = (scheme) => {
+    setSelectedSchemes(prev => {
+      const isSelected = prev.some(s => (s.id || s.slug) === (scheme.id || scheme.slug))
+      if (isSelected) {
+        return prev.filter(s => (s.id || s.slug) !== (scheme.id || scheme.slug))
+      } else {
+        return [...prev, scheme]
+      }
+    })
+  }
+
+  const handleCompare = () => {
+    if (selectedSchemes.length < 2) {
+      alert('Please select at least 2 schemes to compare')
+      return
+    }
+    navigate('/compare', { state: { selectedSchemes } })
   }
 
   return (
@@ -170,6 +191,44 @@ const Results = () => {
               Update Profile
             </button>
           </div>
+
+          {/* Comparison Sidebar */}
+          {selectedSchemes.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-b from-gov-blue/10 to-gov-blue/5 p-6 rounded-[2rem] border border-gov-blue/30"
+            >
+              <div className="text-xs font-bold text-gov-blue uppercase tracking-widest mb-4">
+                Selected for Comparison
+              </div>
+              <div className="space-y-2 mb-6 max-h-48 overflow-y-auto">
+                {selectedSchemes.map((scheme, idx) => (
+                  <div key={idx} className="flex items-center justify-between bg-white/50 p-2 rounded-lg text-xs">
+                    <span className="font-semibold text-gray-800 truncate flex-1">{scheme.scheme_name}</span>
+                    <button
+                      onClick={() => handleToggleSelect(scheme)}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={handleCompare}
+                disabled={selectedSchemes.length < 2}
+                className={`w-full py-3 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all ${
+                  selectedSchemes.length < 2
+                    ? 'bg-gray-300 cursor-not-allowed'
+                    : 'bg-gov-blue hover:bg-gov-deep active:scale-95'
+                }`}
+              >
+                Compare {selectedSchemes.length} Schemes
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </motion.div>
+          )}
         </aside>
 
         {/* Results Grid */}
@@ -185,10 +244,12 @@ const Results = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {matchedSchemes.map((scheme, idx) => (
             <SchemeCard 
-              key={scheme.id} 
+              key={scheme.id || scheme.slug || `scheme-${idx}`} 
               scheme={scheme} 
               index={idx} 
               onApplyDirectly={handleApplyDirectly}
+              isSelected={selectedSchemes.some(s => (s.id || s.slug) === (scheme.id || scheme.slug))}
+              onToggleSelect={handleToggleSelect}
             />
           ))}
         </div>

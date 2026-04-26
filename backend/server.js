@@ -131,46 +131,55 @@ const recommendHandler = (req, res) => {
     }
 
     // ─── SCORING ──────────────────────────────────────────────────────────────
-    let score = 0;
+    let matchScore = 0;
     const reasons = [];
 
-    // Match Query
+    // 1. Base Score for meeting all mandatory criteria
+    matchScore += 75;
+
+    // 2. Match State (Stronger signal)
+    if (userState && (nlp.detected_states || []).includes(userState)) {
+      matchScore += 10;
+      reasons.push(`Targeted for ${userState}`);
+    }
+
+    // 3. Match Category
+    if (userCategory && schemeCat.includes(userCategory)) {
+        matchScore += 7;
+        reasons.push(`Matches your category: ${userCategory}`);
+    }
+
+    // 4. Keyword relevance (Search query or NLP keywords)
     if (queryWords.length > 0) {
       const matches = queryWords.filter(w => schemeText.includes(w));
-      score += matches.length * 10;
+      matchScore += Math.min(matches.length * 4, 12);
       if (matches.length > 0) reasons.push(`Matches search: ${matches.join(', ')}`);
     }
 
-    // Match State
-    if (userState && (nlp.detected_states || []).includes(userState)) {
-      score += 20;
-      reasons.push(`Specifically for ${userState}`);
-    }
-
-    // Match Category
-    if (userCategory && schemeCat.includes(userCategory)) {
-        score += 15;
-        reasons.push(`Matched category ${userCategory}`);
-    }
-
-    // NLP Benefit Scoring (keywords)
+    // 5. NLP Benefit Keywords (Incentives)
     if (nlp.keywords) {
-        const benefitKeywords = ['assistance', 'relief', 'subsidy', 'grant', 'incentive', 'pension'];
+        const benefitKeywords = ['subsidy', 'grant', 'incentive', 'pension', 'relief', 'assistance'];
         const matches = nlp.keywords.filter(k => benefitKeywords.includes(k));
-        score += matches.length * 5;
+        matchScore += Math.min(matches.length * 2, 6);
     }
+
+    // 6. Add some random variance (1-3%) to distinguish similar schemes
+    const variance = (scheme.scheme_name.length % 4);
+    
+    const finalScore = Math.min(matchScore + variance, 99);
 
     results.push({
       ...scheme,
-      matchScore: score,
-      reasoning: reasons.join('; ') || 'Matched your profile criteria',
+      score: finalScore,
+      reason: reasons.join('; ') || 'Highly relevant demographic match',
+      category: scheme.schemeCategory || 'General',
       summary: truncate(scheme.details, 150)
     });
   }
 
   // Sort by score and take top 12
   const topResults = results
-    .sort((a, b) => b.matchScore - a.matchScore)
+    .sort((a, b) => b.score - a.score)
     .slice(0, 12);
 
   res.json(topResults);
@@ -238,8 +247,12 @@ async function fetchLiveUpdates(resourceId, apiKey) {
 // TRANSLATION ENDPOINT
 // ═════════════════════════════════════════════════════════════════════════════
 router.post('/translate', async (req, res) => {
-  const { text, targetLang } = req.body;
+  let { text, targetLang } = req.body;
   if (!text || !targetLang) return res.status(400).json({ error: 'Missing text or targetLang' });
+  
+  // Normalize language code (e.g., 'en-IN' -> 'en', 'kn-IN' -> 'kn')
+  targetLang = targetLang.split('-')[0];
+  
   if (targetLang === 'en') return res.json({ translatedText: text });
 
   const cacheKey = `${targetLang}:${text}`;

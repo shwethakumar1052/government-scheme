@@ -7,6 +7,8 @@ import Form from './pages/Form'
 import Results from './pages/Results'
 import Explanation from './pages/Explanation'
 import SchemeSearch from './pages/SchemeSearch'
+import CompareSchemes from './pages/CompareSchemes'
+import EligibilityQuestionnaire from './pages/EligibilityQuestionnaire'
 
 function App() {
   return (
@@ -17,7 +19,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/form" element={<Form />} />
+            <Route path="/questionnaire" element={<EligibilityQuestionnaire />} />
             <Route path="/results" element={<Results />} />
+            <Route path="/compare" element={<CompareSchemes />} />
             <Route path="/explanation" element={<Explanation />} />
             <Route path="/search" element={<SchemeSearch />} />
           </Routes>

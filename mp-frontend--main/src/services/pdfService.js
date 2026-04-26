@@ -61,10 +61,10 @@ export const generateSchemePDF = (userData, schemes, t) => {
     // Table of Results
     const tableData = schemes.map((s, idx) => [
       (idx + 1).toString().padStart(2, '0'),
-      s.nameKey ? t(s.nameKey) : s.name,
-      s.descKey ? t(s.descKey) : s.description,
-      `${s.score}%`,
-      Array.isArray(s.benefits) ? s.benefits.join('\n• ') : '-'
+      s.nameKey ? t(s.nameKey) : (s.scheme_name || s.name || 'Untitled Scheme'),
+      s.descKey ? t(s.descKey) : (s.summary || s.details || s.description || '-'),
+      `${s.score || 0}%`,
+      s.benefits ? (Array.isArray(s.benefits) ? s.benefits.join('\n• ') : s.benefits.toString()) : '-'
     ]);
 
     autoTable(doc, {

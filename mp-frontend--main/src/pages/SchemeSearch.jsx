@@ -46,8 +46,9 @@ const SchemeSearch = () => {
     const handleSearch = async () => {
         setLoading(true);
         try {
+            const currentLang = i18n.language.split('-')[0]; // Normalize 'en-IN' to 'en'
             const response = await axios.get(`http://localhost:5001/api/search-categorized?type=${type}&query=${query}`);
-            const translatedData = await translateResults(response.data, i18n.language);
+            const translatedData = await translateResults(response.data, currentLang);
             setResults(translatedData);
         } catch (err) {
             console.error('Search failed:', err);
